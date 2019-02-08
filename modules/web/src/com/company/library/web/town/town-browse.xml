@@ -1,59 +1,44 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
-  ~ Copyright (c) 2017 Haulmont
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         caption="msg://browseCaption"
-        class="com.company.library.web.town.TownBrowse"
-        lookupComponent="townTable"
+        focusComponent="townsTable"
         messagesPack="com.company.library.web.town">
-    <dsContext>
-        <collectionDatasource id="townDs"
-                              class="com.company.library.entity.Town"
-                              view="_local">
-            <query>
-                <![CDATA[select e from library$Town e]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
-    <layout spacing="true">
-        <table id="townTable"
-               height="100%"
-               width="100%">
-            <rows datasource="townDs"/>
+    <data readOnly="true">
+        <collection id="townsDc"
+                    class="com.company.library.entity.Town"
+                    view="_local">
+            <loader id="townsDl">
+                <query><![CDATA[select e from library$Town e]]></query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="townsTable"
+            spacing="true">
+        <groupTable id="townsTable"
+                    width="100%"
+                    dataContainer="townsDc">
+            <actions>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
+                <action id="excel" type="excel"/>
+            </actions>
             <columns>
                 <column id="name"/>
             </columns>
             <rowsCount/>
-            <actions>
-                <action id="create" openType="DIALOG"/>
-                <action id="edit" openType="DIALOG"/>
-                <action id="remove"/>
-                <action id="excel"/>
-            </actions>
-            <buttonsPanel id="buttonsPanel"
-                          alwaysVisible="true">
-                <button id="createBtn"
-                        action="townTable.create"/>
-                <button id="editBtn"
-                        action="townTable.edit"/>
-                <button id="removeBtn"
-                        action="townTable.remove"/>
-                <button id="excelBtn"
-                        action="townTable.excel"/>
+            <buttonsPanel id="buttonsPanel" alwaysVisible="true">
+                <button id="createBtn" action="townsTable.create"/>
+                <button id="editBtn" action="townsTable.edit"/>
+                <button id="removeBtn" action="townsTable.remove"/>
+                <button id="excelBtn" action="townsTable.excel"/>
             </buttonsPanel>
-        </table>
+        </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

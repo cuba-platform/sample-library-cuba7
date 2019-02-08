@@ -1,41 +1,46 @@
-/*
- * Copyright (c) 2017 Haulmont
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.company.library.web.bookpublication;
 
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.Table;
+import com.company.library.web.bookinstance.BookInstanceBrowse;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.GroupTable;
+import com.haulmont.cuba.gui.screen.*;
 import com.company.library.entity.BookPublication;
 
 import javax.inject.Inject;
-import java.util.Collections;
 
-public class BookPublicationBrowse extends AbstractLookup {
+@UiController("library$BookPublication.browse")
+@UiDescriptor("book-publication-browse.xml")
+@LookupComponent("bookPublicationsTable")
+@LoadDataBeforeShow
+public class BookPublicationBrowse extends StandardLookup<BookPublication> {
 
     @Inject
-    Table<BookPublication> bookPublicationTable;
+    private Notifications notifications;
 
-    public void browseInstances() {
-        BookPublication bookPublication = bookPublicationTable.getSingleSelected();
+    @Inject
+    private GroupTable<BookPublication> bookPublicationsTable;
+
+    @Inject
+    private MessageBundle messageBundle;
+
+    @Inject
+    private Screens screens;
+
+
+    @Subscribe("bookPublicationsTable.browseInstances")
+    protected void onBookPublicationsTableBrowseInstances(Action.ActionPerformedEvent event) {
+        BookPublication bookPublication = bookPublicationsTable.getSingleSelected();
         if (bookPublication != null) {
-            openWindow("library$BookInstance.lookup", WindowManager.OpenType.THIS_TAB,
-                    Collections.singletonMap("bookPublication", bookPublication));
+            BookInstanceBrowse screen = screens.create(BookInstanceBrowse.class, OpenMode.THIS_TAB);
+            screen.setPublication(bookPublication);
+            screens.show(screen);
         } else {
-            showNotification(getMessage("selectBookPublicationMessage.text"), NotificationType.HUMANIZED);
+            notifications.create()
+                    .withCaption(messageBundle.getMessage("selectBookPublicationMessage.text"))
+                    .withType(Notifications.NotificationType.HUMANIZED)
+                    .show();
         }
     }
 }

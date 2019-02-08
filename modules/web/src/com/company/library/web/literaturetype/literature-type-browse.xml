@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        xmlns:q="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
+        caption="msg://browseCaption"
+        focusComponent="literatureTypesTable"
+        messagesPack="com.company.library.web.literaturetype">
+    <data readOnly="true">
+        <collection id="literatureTypesDc"
+                    class="com.company.library.entity.LiteratureType"
+                    view="_local">
+            <loader id="literatureTypesDl">
+                <query><![CDATA[select e from library$LiteratureType e]]>
+                    <condition>
+                            <q:jpql>
+                                <q:where>e.name like :property</q:where>
+                            </q:jpql>
+                    </condition>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="literatureTypesTable"
+            spacing="true">
+        <hbox>
+            <groupBox caption="msg://filterByName"
+                      orientation="horizontal"
+                      spacing="true"
+                      width="auto">
+                <textField id="filterField"
+                           width="200px"/>
+                <button id="applyBtn"
+                        caption="msg://apply"/>
+            </groupBox>
+        </hbox>
+        <groupTable id="literatureTypesTable"
+                    width="100%"
+                    dataContainer="literatureTypesDc">
+            <actions>
+                <action id="create" type="create" openType="NEW_WINDOW"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
+            </actions>
+            <columns>
+                <column id="name"/>
+            </columns>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn" action="literatureTypesTable.create"/>
+                <button id="editBtn" action="literatureTypesTable.edit"/>
+                <button id="removeBtn" action="literatureTypesTable.remove"/>
+            </buttonsPanel>
+        </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
+    </layout>
+</window>

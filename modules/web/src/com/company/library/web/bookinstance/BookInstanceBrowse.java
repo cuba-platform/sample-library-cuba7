@@ -1,48 +1,49 @@
-/*
- * Copyright (c) 2017 Haulmont
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.company.library.web.bookinstance;
 
-import com.haulmont.cuba.gui.WindowParam;
-import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.Table;
-import com.company.library.entity.BookInstance;
 import com.company.library.entity.BookPublication;
 import com.company.library.web.components.AssignLibraryDepartmentAction;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.GroupTable;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.screen.*;
+import com.company.library.entity.BookInstance;
 
 import javax.inject.Inject;
-import java.util.Map;
 
-public class BookInstanceBrowse extends AbstractLookup {
+@UiController("library$BookInstance.browse")
+@UiDescriptor("book-instance-browse.xml")
+@LookupComponent("bookInstancesTable")
+@LoadDataBeforeShow
+public class BookInstanceBrowse extends StandardLookup<BookInstance> {
 
     @Inject
-    private Table<BookInstance> bookInstanceTable;
+    private GroupTable<BookInstance> bookInstancesTable;
 
     @Inject
     private Label bookTitleLabel;
 
-    @WindowParam(name = "bookPublication", required = true)
+    @Inject
+    private MessageBundle messageBundle;
+
     private BookPublication publication;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        addAction(new AssignLibraryDepartmentAction(bookInstanceTable));
+    @Inject
+    private CollectionLoader<BookInstance> bookInstancesDl;
 
-        bookTitleLabel.setValue(String.format(getMessage("book"),
+    @Inject
+    private Button assignLibraryDepartmentBtn;
+
+
+    @Subscribe
+    protected void onBeforeShow(BeforeShowEvent event) {
+        bookTitleLabel.setValue(String.format(messageBundle.getMessage("book"),
                 publication.getBook().getName(), publication.getPublisher().getName(), publication.getYear()));
+        bookInstancesDl.setParameter("property", publication);
+        assignLibraryDepartmentBtn.setAction(new AssignLibraryDepartmentAction(bookInstancesTable));
+    }
+
+    public void setPublication(BookPublication bookPublication) {
+        publication = bookPublication;
     }
 }

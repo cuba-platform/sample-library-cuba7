@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         caption="msg://browseCaption"
-        focusComponent="booksTable"
-        messagesPack="com.company.library.web.book">
+        focusComponent="libraryDepartmentsTable"
+        messagesPack="com.company.library.web.librarydepartment">
     <data readOnly="true">
-        <collection id="booksDc"
-                    class="com.company.library.entity.Book"
-                    view="book.browse">
-            <loader id="booksDl">
+        <collection id="libraryDepartmentsDc"
+                    class="com.company.library.entity.LibraryDepartment"
+                    view="_local">
+            <loader id="libraryDepartmentsDl">
                 <query>
-                    <![CDATA[select e from library$Book e]]>
+                    <![CDATA[select e from library$LibraryDepartment e]]>
                 </query>
             </loader>
         </collection>
     </data>
     <dialogMode height="600"
                 width="800"/>
-    <layout expand="booksTable"
+    <layout expand="libraryDepartmentsTable"
             spacing="true">
         <filter id="filter"
-                applyTo="booksTable"
-                dataLoader="booksDl">
+                applyTo="libraryDepartmentsTable"
+                dataLoader="libraryDepartmentsDl">
             <properties include=".*"/>
         </filter>
-        <groupTable id="booksTable"
+        <groupTable id="libraryDepartmentsTable"
                     width="100%"
-                    dataContainer="booksDc">
+                    dataContainer="libraryDepartmentsDc">
             <actions>
                 <action id="create" type="create"/>
                 <action id="edit" type="edit"/>
@@ -33,14 +33,13 @@
             </actions>
             <columns>
                 <column id="name"/>
-                <column id="literatureType"/>
             </columns>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel"
                           alwaysVisible="true">
-                <button id="createBtn" action="booksTable.create"/>
-                <button id="editBtn" action="booksTable.edit"/>
-                <button id="removeBtn" action="booksTable.remove"/>
+                <button id="createBtn" action="libraryDepartmentsTable.create"/>
+                <button id="editBtn" action="libraryDepartmentsTable.edit"/>
+                <button id="removeBtn" action="libraryDepartmentsTable.remove"/>
             </buttonsPanel>
         </groupTable>
         <hbox id="lookupActions" spacing="true" visible="false">

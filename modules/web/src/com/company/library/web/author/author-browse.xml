@@ -1,66 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
-  ~ Copyright (c) 2017 Haulmont
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         caption="msg://browseCaption"
-        class="com.company.library.web.author.AuthorBrowse"
         focusComponent="authorsTable"
-        lookupComponent="authorsTable"
         messagesPack="com.company.library.web.author">
-    <dsContext>
-        <groupDatasource id="authorsDs"
-                         class="com.company.library.entity.Author"
-                         view="_local">
-            <query>
-                <![CDATA[select e from library$Author e]]>
-            </query>
-        </groupDatasource>
-    </dsContext>
+    <data readOnly="true">
+        <collection id="authorsDc"
+                    class="com.company.library.entity.Author"
+                    view="_local">
+            <loader id="authorsDl">
+                <query>
+                    <![CDATA[select e from library$Author e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
     <dialogMode height="600"
                 width="800"/>
     <layout expand="authorsTable"
             spacing="true">
         <filter id="filter"
                 applyTo="authorsTable"
-                datasource="authorsDs">
+                dataLoader="authorsDl">
             <properties include=".*"/>
         </filter>
         <groupTable id="authorsTable"
-                    width="100%">
+                    width="100%"
+                    dataContainer="authorsDc">
             <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="remove"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
             </actions>
             <columns>
                 <column id="firstName"/>
                 <column id="middleName"/>
                 <column id="lastName"/>
             </columns>
-            <rows datasource="authorsDs"/>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel"
                           alwaysVisible="true">
-                <button id="createBtn"
-                        action="authorsTable.create"/>
-                <button id="editBtn"
-                        action="authorsTable.edit"/>
-                <button id="removeBtn"
-                        action="authorsTable.remove"/>
+                <button id="createBtn" action="authorsTable.create"/>
+                <button id="editBtn" action="authorsTable.edit"/>
+                <button id="removeBtn" action="authorsTable.remove"/>
             </buttonsPanel>
         </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

@@ -1,116 +1,94 @@
-/*
- * Copyright (c) 2017 Haulmont
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.company.library.web.accession;
 
 import com.company.library.entity.Book;
 import com.company.library.entity.BookInstance;
 import com.company.library.entity.BookPublication;
 import com.company.library.service.BookInstanceService;
+import com.company.library.web.bookpublication.BookPublicationEdit;
 import com.company.library.web.components.AssignLibraryDepartmentAction;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.LookupPickerField;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.screen.*;
 
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
 
-public class AccessionRegisterWindow extends AbstractWindow {
-
-    @Inject
-    private BookInstanceService bookInstanceService;
+@UiController("library_AccessionRegisterWindow")
+@UiDescriptor("accession-register.xml")
+public class AccessionRegisterWindow extends Screen {
 
     @Inject
-    private CollectionDatasource<Book, UUID> booksDs;
+    private LookupPickerField<Book> bookField;
 
     @Inject
-    private CollectionDatasource<BookPublication, UUID> bookPublicationsDs;
+    private CollectionLoader<BookPublication> bookPublicationsDl;
 
     @Inject
-    private CollectionDatasource<BookInstance, UUID> bookInstancesDs;
+    private Notifications notifications;
 
     @Inject
-    private LookupPickerField bookField;
+    private MessageBundle messageBundle;
+
+    @Inject
+    private TextField<Integer> bookInstancesAmountField;
 
     @Inject
     private Table<BookPublication> bookPublicationsTable;
 
     @Inject
-    private TextField bookInstancesAmountField;
+    private CollectionContainer<BookInstance> bookInstancesDc;
+
+    @Inject
+    private BookInstanceService bookInstanceService;
+
+    @Inject
+    private Button assignLibraryDepartmentBtn;
 
     @Inject
     private Table<BookInstance> bookInstancesTable;
 
     @Inject
-    private Metadata metadata;
+    private CollectionLoader<Book> booksDl;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        bookField.addValueChangeListener(e -> bookPublicationsDs.refresh());
+    @Inject
+    private ScreenBuilders screenBuilders;
 
-        addAction(new AssignLibraryDepartmentAction(bookInstancesTable));
+    @Subscribe("bookField")
+    protected void onBookFieldValueChange(HasValue.ValueChangeEvent<Book> event) {
+        bookPublicationsDl.setParameter("property", bookField.getValue());
+        bookPublicationsDl.load();
+        assignLibraryDepartmentBtn.setAction(new AssignLibraryDepartmentAction(bookInstancesTable));
     }
 
-    public void createBook() {
-        final Editor bookEditor = openEditor(
-                "library$Book.edit", metadata.create(Book.class), WindowManager.OpenType.THIS_TAB
-        );
-        bookEditor.addCloseListener(actionId -> {
-            booksDs.refresh();
-            bookField.setValue(bookEditor.getItem());
-        });
-    }
-
-    public void createBookPublication() {
-        Book book = bookField.getValue();
-        if (book == null) {
-            showNotification(getMessage("selectBookMessage.text"), NotificationType.HUMANIZED);
-            return;
-        }
-
-        BookPublication bookPublication = metadata.create(BookPublication.class);
-        bookPublication.setBook(book);
-        Editor bookPublicationEditor = openEditor(
-                "library$BookPublication.edit", bookPublication, WindowManager.OpenType.THIS_TAB
-        );
-        bookPublicationEditor.addCloseListener(actionId -> bookPublicationsDs.refresh());
-    }
-
-    public void createBookInstances() {
+    @Subscribe("createBookInstances")
+    protected void onCreateBookInstances(Action.ActionPerformedEvent event) {
         BookPublication bookPublication = bookPublicationsTable.getSingleSelected();
         if (bookPublication == null) {
-            showNotification(getMessage("selectBookPublicationMessage.text"), NotificationType.HUMANIZED);
+            notifications.create()
+                    .withCaption(messageBundle.getMessage("selectBookPublicationMessage.text"))
+                    .withType(Notifications.NotificationType.HUMANIZED)
+                    .show();
             return;
         }
 
-        Integer bookInstancesAmount = bookInstancesAmountField.getValue();
+        Integer bookInstancesAmount =  bookInstancesAmountField.getValue();
 
         if (bookInstancesAmount == null || bookInstancesAmount == 0) {
-            showNotification(getMessage("setBookInstancesAmountMessage.text"), NotificationType.HUMANIZED);
+            notifications.create()
+                    .withCaption(messageBundle.getMessage("setBookInstancesAmountMessage.text"))
+                    .withType(Notifications.NotificationType.HUMANIZED)
+                    .show();
             return;
         }
 
         if (bookInstancesAmount > 100) {
-            showNotification(getMessage("bigBookInstancesAmountMessage.text"), NotificationType.HUMANIZED);
+            notifications.create()
+                    .withCaption(messageBundle.getMessage("bigBookInstancesAmountMessage.text"))
+                    .withType(Notifications.NotificationType.HUMANIZED)
+                    .show();
             return;
         }
 
@@ -119,8 +97,34 @@ public class AccessionRegisterWindow extends AbstractWindow {
                 bookPublication, bookInstancesAmount);
 
         // Add created book instances to the datasource
-        for (BookInstance bookInstance : bookInstances) {
-            bookInstancesDs.includeItem(bookInstance);
+
+        bookInstancesDc.setItems(bookInstances);
+    }
+
+    @Subscribe
+    protected void onBeforeShow(BeforeShowEvent event) {
+        booksDl.load();
+    }
+
+    @Subscribe("bookPublicationsTable.createBookPublication")
+    protected void onBookPublicationsTableCreateBookPublication(Action.ActionPerformedEvent event) {
+        Book book = bookField.getValue();
+        if (book == null) {
+            notifications.create()
+                    .withCaption(messageBundle.getMessage("selectBookMessage.text"))
+                    .withType(Notifications.NotificationType.HUMANIZED)
+                    .show();
+            return;
         }
+
+        screenBuilders.editor(bookPublicationsTable)
+                .newEntity()
+                .withInitializer(bookPublication -> {          // lambda to initialize new instance
+                    bookPublication.setBook(book);
+                })
+                .withScreenClass(BookPublicationEdit.class)    // specific editor screen
+                .withLaunchMode(OpenMode.THIS_TAB)
+                .build()
+                .show();
     }
 }

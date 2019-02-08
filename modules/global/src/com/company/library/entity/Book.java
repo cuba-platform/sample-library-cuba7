@@ -16,11 +16,10 @@
 
 package com.company.library.entity;
 
-import javax.persistence.*;
-
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 
+import javax.persistence.*;
 import java.util.Set;
 
 @NamePattern("%s|name")
@@ -39,7 +38,7 @@ public class Book extends StandardEntity {
     @JoinTable(name = "LIBRARY_BOOK_AUTHOR_LINK",
             joinColumns = @JoinColumn(name = "BOOK_ID"),
             inverseJoinColumns = @JoinColumn(name = "AUTHOR_ID"))
-    @ManyToMany
+    @ManyToMany(mappedBy = "")
     private Set<Author> authors;
 
     public void setAuthors(Set<Author> authors) {

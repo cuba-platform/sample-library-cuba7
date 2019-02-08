@@ -1,37 +1,45 @@
-/*
- * Copyright (c) 2017 Haulmont
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.company.library.web.literaturetype;
 
-import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.HasValue;
+import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.screen.*;
+import com.company.library.entity.LiteratureType;
 
 import javax.inject.Inject;
-import java.util.Map;
 
-public class LiteratureTypeBrowse extends AbstractLookup {
+@UiController("library$LiteratureType.browse")
+@UiDescriptor("literature-type-browse.xml")
+@LookupComponent("literatureTypesTable")
+@LoadDataBeforeShow
+public class LiteratureTypeBrowse extends StandardLookup<LiteratureType> {
 
     @Inject
-    private CollectionDatasource literatureTypeDs;
+    private CollectionLoader<LiteratureType> literatureTypesDl;
 
-    @Override
-    public void init(Map<String, Object> params) {
+    @Inject
+    private TextField<String> filterField;
+
+    @Subscribe("applyBtn")
+    protected void onApplyBtnClick(Button.ClickEvent event) {
+        loadLiteratureTypes();
     }
 
-    public void refreshTable() {
-        literatureTypeDs.refresh();
+    @Subscribe("filterField")
+    protected void onValueChange(HasValue.ValueChangeEvent event) {
+        loadLiteratureTypes();
+    }
+
+    private void loadLiteratureTypes(){
+        String value = filterField.getValue();
+
+        if (value != null) {
+            literatureTypesDl.setParameter("property", "(?i)%" + value + "%");
+        } else {
+            literatureTypesDl.setParameter("property", value);
+        }
+
+        literatureTypesDl.load();
     }
 }

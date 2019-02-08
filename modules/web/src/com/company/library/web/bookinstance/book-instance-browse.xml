@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        xmlns:q="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
+        caption="msg://browseCaption"
+        focusComponent="bookInstancesTable"
+        messagesPack="com.company.library.web.bookinstance">
+    <data readOnly="true">
+        <collection id="bookInstancesDc"
+                    class="com.company.library.entity.BookInstance"
+                    view="bookInstance.browse">
+            <loader id="bookInstancesDl">
+                <query>
+                    <![CDATA[select e from library$BookInstance e order by e.inventoryNumber]]>
+                    <condition>
+                        <q:jpql>
+                            <q:where>e.bookPublication = :property</q:where>
+                        </q:jpql>
+                    </condition>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="bookInstancesTable"
+            spacing="true">
+        <label id="bookTitleLabel"/>
+        <groupTable id="bookInstancesTable"
+                    width="100%"
+                    dataContainer="bookInstancesDc">
+            <actions>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
+                <action id="excel" type="excel"/>
+            </actions>
+            <columns>
+                <column id="isReference"/>
+                <column id="inventoryNumber"/>
+                <column id="bookPublication"/>
+                <column id="libraryDepartment"/>
+            </columns>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel" alwaysVisible="true">
+                <button id="assignLibraryDepartmentBtn" caption="msg://assignLibraryDepartment"/>
+                <button id="editBtn" action="bookInstancesTable.edit"/>
+                <button id="removeBtn" action="bookInstancesTable.remove"/>
+                <button id="createBtn" action="bookInstancesTable.excel"/>
+            </buttonsPanel>
+        </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
+    </layout>
+</window>

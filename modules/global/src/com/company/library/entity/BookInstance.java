@@ -16,10 +16,10 @@
 
 package com.company.library.entity;
 
-import javax.persistence.*;
-
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+
+import javax.persistence.*;
 
 @NamePattern("%s|inventoryNumber")
 @Table(name = "LIBRARY_BOOK_INSTANCE")

@@ -1,6 +1,11 @@
 package com.company.library.web.book;
 
-import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.screen.*;
+import com.company.library.entity.Book;
 
-public class BookBrowse extends AbstractLookup {
+@UiController("library$Book.browse")
+@UiDescriptor("book-browse.xml")
+@LookupComponent("booksTable")
+@LoadDataBeforeShow
+public class BookBrowse extends StandardLookup<Book> {
 }

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://browseCaption"
+        focusComponent="bookPublicationsTable"
+        messagesPack="com.company.library.web.bookpublication">
+    <data readOnly="true">
+        <collection id="bookPublicationsDc"
+                    class="com.company.library.entity.BookPublication"
+                    view="bookPublication.full">
+            <loader id="bookPublicationsDl">
+                <query><![CDATA[select e from library$BookPublication e]]></query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="bookPublicationsTable"
+            spacing="true">
+        <filter id="filter"
+                applyTo="bookPublicationsTable"
+                dataLoader="bookPublicationsDl">
+            <properties include=".*"/>
+        </filter>
+        <groupTable id="bookPublicationsTable"
+                    width="100%"
+                    dataContainer="bookPublicationsDc">
+            <actions>
+                <action id="browseInstances" caption="msg://browseInstances"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
+                <action id="excel" type="excel"/>
+            </actions>
+            <columns>
+                <column id="book"/>
+                <column id="publisher"/>
+                <column id="town"/>
+                <column id="year"/>
+            </columns>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button action="bookPublicationsTable.browseInstances"/>
+                <button id="createBtn" action="bookPublicationsTable.create"/>
+                <button id="editBtn" action="bookPublicationsTable.edit"/>
+                <button id="removeBtn" action="bookPublicationsTable.remove"/>
+                <button id="excelButton" action="bookPublicationsTable.excel"/>
+            </buttonsPanel>
+        </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
+    </layout>
+</window>

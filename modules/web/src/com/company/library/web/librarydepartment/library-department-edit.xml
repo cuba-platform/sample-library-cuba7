@@ -2,10 +2,10 @@
 <window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         caption="msg://editorCaption"
         focusComponent="form"
-        messagesPack="com.company.library.web.town">
+        messagesPack="com.company.library.web.librarydepartment">
     <data>
-        <instance id="townDc"
-                  class="com.company.library.entity.Town"
+        <instance id="libraryDepartmentDc"
+                  class="com.company.library.entity.LibraryDepartment"
                   view="_local">
             <loader/>
         </instance>
@@ -13,7 +13,7 @@
     <dialogMode height="600"
                 width="800"/>
     <layout expand="editActions" spacing="true">
-        <form id="form" dataContainer="townDc">
+        <form id="form" dataContainer="libraryDepartmentDc">
             <column width="250px">
                 <textField id="nameField" property="name"/>
             </column>

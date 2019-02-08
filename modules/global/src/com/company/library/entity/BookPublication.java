@@ -16,10 +16,12 @@
 
 package com.company.library.entity;
 
-import javax.persistence.*;
-
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.chile.core.annotations.NumberFormat;
 import com.haulmont.cuba.core.entity.StandardEntity;
+
+import javax.persistence.*;
 
 @NamePattern("%s|book")
 @Table(name = "LIBRARY_BOOK_PUBLICATION")
@@ -27,6 +29,7 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 public class BookPublication extends StandardEntity {
     private static final long serialVersionUID = -4909470921229152146L;
 
+    @MetaProperty(datatype = "year")
     @Column(name = "YEAR_", nullable = false)
     private Integer year;
 

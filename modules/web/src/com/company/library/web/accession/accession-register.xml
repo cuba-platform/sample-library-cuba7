@@ -1,131 +1,87 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
-  ~ Copyright (c) 2017 Haulmont
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
-        caption="msg://caption"
-        class="com.company.library.web.accession.AccessionRegisterWindow"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://caption"
+        xmlns:q="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
         messagesPack="com.company.library.web.accession">
-    <dsContext>
-        <collectionDatasource id="booksDs"
-                              class="com.company.library.entity.Book"
-                              view="_minimal">
-            <query>
-                <![CDATA[select b from library$Book b
-order by b.name]]>
-            </query>
-        </collectionDatasource>
-        <collectionDatasource id="bookPublicationsDs"
-                              class="com.company.library.entity.BookPublication"
-                              view="bookPublication.full">
-            <query>
-                <![CDATA[select p from library$BookPublication p
-where p.book.id = :component$bookField.id
-order by p.book.name]]>
-            </query>
-        </collectionDatasource>
-        <collectionDatasource id="bookInstancesDs"
-                              class="com.company.library.entity.BookInstance"
-                              refreshMode="NEVER"
-                              view="bookInstance.accession"/>
-    </dsContext>
+    <data>
+        <collection id="booksDc" class="com.company.library.entity.Book" view="_minimal">
+            <loader id = "booksDl">
+                <query><![CDATA[select e from library$Book e order by e.name]]></query>
+            </loader>
+        </collection>
+        <collection id="bookPublicationsDc" class="com.company.library.entity.BookPublication" view="bookPublication.full">
+            <loader id="bookPublicationsDl">
+                <query><![CDATA[select e from library$BookPublication e order by e.book.name]]>
+                    <condition>
+                        <q:jpql>
+                            <q:where>e.book = :property</q:where>
+                        </q:jpql>
+                    </condition>
+                </query>
+            </loader>
+        </collection>
+        <collection id="bookInstancesDc" class="com.company.library.entity.BookInstance" view="bookInstance.accession">
+            <loader id="bookInstancesDl">
+                <query><![CDATA[select e from library$BookInstance e]]></query>
+            </loader>
+        </collection>
+    </data>
     <actions>
-        <action id="createBook"
-                caption="msg://actions.Create"
-                icon="icons/create.png"
-                invoke="createBook"/>
-        <action id="createBookInstances"
-                caption="msg://createBookInstances"
-                invoke="createBookInstances"/>
+        <action id="createBookInstances" caption="msg://createBookInstances"/>
     </actions>
     <layout expand="itemsGroupBox"
             spacing="true">
-        <groupBox caption="msg://selectBook"
-                  spacing="true"
-                  width="auto">
-            <lookupPickerField id="bookField"
-                               optionsDatasource="booksDs"
-                               width="300px">
+        <groupBox spacing="true" caption="msg://selectBook">
+            <lookupPickerField id="bookField" optionsContainer="booksDc">
                 <actions>
-                    <action id="lookup"/>
-                    <action id="open"/>
+                    <action id="lookup" type="picker_lookup"/>
+                    <action id="open" type="picker_open"/>
                 </actions>
             </lookupPickerField>
         </groupBox>
-        <groupBox caption="msg://selectBookPublication"
-                  spacing="true">
-            <table id="bookPublicationsTable"
-                   height="100px"
-                   width="100%">
-                <rows datasource="bookPublicationsDs"/>
+        <groupBox spacing="true" caption="msg://selectBookPublication">
+            <table id="bookPublicationsTable" height="100px" width="100%" dataContainer="bookPublicationsDc">
                 <columns>
                     <column id="publisher"/>
-                    <column id="year">
-                        <formatter class="com.company.library.web.bookpublication.YearFormatter"/>
-                    </column>
+                    <column id="year"/>
                     <column id="town"/>
                 </columns>
                 <actions>
                     <action id="createBookPublication"
                             caption="msg://createBookPublication"
                             icon="icons/create.png"
-                            invoke="createBookPublication"
                             shortcut="Ctrl-Insert"/>
                     <action id="edit"/>
                     <action id="remove"/>
                 </actions>
             </table>
         </groupBox>
-        <groupBox caption="msg://createBookInstances"
-                  orientation="horizontal"
-                  width="auto">
+        <groupBox spacing="true" caption="msg://createBookInstances">
             <grid spacing="true">
-                <columns count="3"/>
+                <columns>
+                    <column flex="0.0"/>
+                    <column flex="0.0"/>
+                    <column flex="0.0"/>
+                </columns>
                 <rows>
                     <row>
                         <label value="msg://bookInstancesAmount"/>
-                        <textField id="bookInstancesAmountField"
-                                   datatype="int"/>
-                        <button id="createBookInstancesButtonBtn"
-                                action="createBookInstances"/>
+                        <textField id="bookInstancesAmountField" datatype="int"/>
+                        <button id="createBookInstancesButtonBtn" action="createBookInstances"/>
                     </row>
                 </rows>
             </grid>
         </groupBox>
-        <groupBox id="itemsGroupBox"
-                  caption="msg://createdBookInstances"
-                  expand="bookInstancesTable"
-                  spacing="true">
-            <table id="bookInstancesTable"
-                   multiselect="true"
-                   width="100%">
-                <rows datasource="bookInstancesDs"/>
+        <groupBox id="itemsGroupBox" spacing="true" caption="msg://createdBookInstances" expand="bookInstancesTable">
+            <table id="bookInstancesTable" height="100px" width="100%" multiselect="true"
+                   dataContainer="bookInstancesDc">
                 <columns>
                     <column id="inventoryNumber"/>
-                    <column id="bookPublication.book"/>
+                    <column id="bookPublication"/>
                     <column id="libraryDepartment"/>
                     <column id="isReference"/>
                 </columns>
-                <actions>
-                    <action id="edit"/>
-                    <action id="remove"/>
-                    <action id="refresh"/>
-                </actions>
             </table>
-            <button id="assignLibraryDepartmentBtn"
-                    action="assignLibraryDepartment"/>
+            <button id="assignLibraryDepartmentBtn" caption="msg://assignLibraryDepartment"/>
         </groupBox>
     </layout>
 </window>

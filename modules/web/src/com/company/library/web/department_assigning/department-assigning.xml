@@ -1,50 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
-  ~ Copyright (c) 2017 Haulmont
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
-        caption="msg://caption"
-        class="com.company.library.web.department_assigning.DepartmentAssigning"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://caption"
         messagesPack="com.company.library.web.department_assigning">
-    <dsContext>
-        <collectionDatasource id="libraryDepartmentsDs"
-                              class="com.company.library.entity.LibraryDepartment"
-                              view="_minimal">
-            <query>
-                <![CDATA[select ld from library$LibraryDepartment ld
-                    order by ld.name]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
+    <data readOnly="true">
+        <collection id="libraryDepartmentsDc" class="com.company.library.entity.LibraryDepartment" view="_minimal">
+            <loader id="libraryDepartmentsDl">
+                <query><![CDATA[select ld from library$LibraryDepartment ld
+                    order by ld.name]]></query>
+            </loader>
+        </collection>
+    </data>
     <actions>
-        <action id="assign"
-                caption="msg://assign"
-                invoke="assign"/>
-        <action id="close"
-                caption="msg://close"
-                invoke="close"/>
+        <action id="assignAction"/>
+        <action id="clearAction"/>
     </actions>
+
+    <dialogMode width="400"/>
+
     <layout spacing="true">
-        <lookupField id="libraryDepartmentField"
-                     caption="msg://selectLibraryDepartment"
-                     optionsDatasource="libraryDepartmentsDs"
-                     width="100%"/>
+        <lookupField id="lookupField" caption="msg://selectLibraryDepartment" optionsContainer="libraryDepartmentsDc"/>
         <hbox spacing="true">
-            <button id="assignBtn"
-                    action="assign"/>
-            <button action="close"/>
+            <button id="assignButton" caption="Assign" action="assignAction"/>
+            <button id="clearButton" caption="Clear" action="clearAction"/>
         </hbox>
     </layout>
 </window>

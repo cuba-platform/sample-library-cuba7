@@ -18,52 +18,79 @@ package com.company.library.web.components;
 
 import com.company.library.entity.BookInstance;
 import com.company.library.web.department_assigning.DepartmentAssigning;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.data.TableItems;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.DataLoader;
+import com.haulmont.cuba.gui.model.HasLoader;
+import com.haulmont.cuba.gui.screen.OpenMode;
+import com.haulmont.cuba.gui.screen.ScreenContext;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * Action that allows to assign library department to book instances, selected in a table.
  * <p>
  * This action is used by BookInstanceBrowse and AccessionRegisterWindow.
  */
-public class AssignLibraryDepartmentAction extends AbstractAction {
+public class AssignLibraryDepartmentAction extends BaseAction {
 
     private Table<BookInstance> booksInstancesTable;
 
     public AssignLibraryDepartmentAction(Table<BookInstance> booksInstancesTable) {
         super("assignLibraryDepartment");
+
+        Messages messages = AppBeans.get(Messages.class);
+
+        this.caption = messages.getMessage(AssignLibraryDepartmentAction.class, "assignLibraryDepartment");
         this.booksInstancesTable = booksInstancesTable;
     }
 
     @Override
     public void actionPerform(Component component) {
         Frame frame = booksInstancesTable.getFrame();
-
+        ScreenContext screenContext = ComponentsHelper.getScreenContext(booksInstancesTable);
         Set<BookInstance> bookInstances = booksInstancesTable.getSelected();
 
         if (!bookInstances.isEmpty()) {
-            // Parameters passed to DepartmentAssigning window
-            Map<String, Object> params = new HashMap<>();
-            params.put(DepartmentAssigning.INSTANCES_PARAM, bookInstances);
-            params.put(DepartmentAssigning.VIEW_PARAM, booksInstancesTable.getDatasource().getView());
 
-            final DepartmentAssigning departmentAssigningWindow = (DepartmentAssigning) frame.openWindow("department-assigning",
-                    WindowManager.OpenType.DIALOG.width((float)400), params);
-            departmentAssigningWindow.addListener(actionId -> {
-                if (DepartmentAssigning.SUCCESS_ACTION.equals(actionId)) {
-                    for (BookInstance assignedInstance : departmentAssigningWindow.getAssignedInstances()) {
-                        // Put returned instances back into datasource
-                        booksInstancesTable.getDatasource().updateItem(assignedInstance);
-                    }
-                }
-            });
+            ScreenBuilders screenBuilders = AppBeans.get(ScreenBuilders.class);
+
+            DepartmentAssigning screen = screenBuilders.screen(frame.getFrameOwner())
+                    .withScreenClass(DepartmentAssigning.class)
+                    .withOpenMode(OpenMode.DIALOG)
+                    .withAfterCloseListener(closeEvent -> {
+                        if (closeEvent.getCloseAction() == DepartmentAssigning.SUCCESS_ACTION) {
+
+                            TableItems<BookInstance> tableItems = booksInstancesTable.getItems();
+
+                            CollectionContainer<BookInstance> container = ((ContainerDataUnit) tableItems).getContainer();
+                            DataLoader dataLoader = ((HasLoader) container).getLoader();
+                            checkNotNullArgument(dataLoader);
+                            dataLoader.load();
+                        }
+                    })
+                    .build();
+            screen.setBookInstances(bookInstances);
+            screen.setBookInstanceView(((ContainerDataUnit) booksInstancesTable.getItems()).getContainer().getView());
+            screen.show();
         } else {
-            frame.showNotification(messages.getMainMessage("selectBookInstancesMessage.text"),
-                    Frame.NotificationType.HUMANIZED);
+            Messages messages = AppBeans.get(Messages.NAME);
+            screenContext.getNotifications().create()
+                    .withCaption(messages.getMainMessage("selectBookInstancesMessage.text"))
+                    .withType(Notifications.NotificationType.HUMANIZED)
+                    .show();
         }
     }
 }

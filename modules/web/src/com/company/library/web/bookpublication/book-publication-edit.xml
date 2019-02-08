@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://editorCaption"
+        focusComponent="bookField" messagesPack="com.company.library.web.bookpublication">
+    <data>
+        <instance id="bookPublicationDc" class="com.company.library.entity.BookPublication" view="bookPublication.full">
+            <loader/>
+        </instance>
+        <collection id="booksDc" class="com.company.library.entity.Book" view="_minimal">
+            <loader>
+                <query><![CDATA[select e from library$Book e ]]></query>
+            </loader>
+        </collection>
+        <collection id="publishersDc" class="com.company.library.entity.Publisher" view="_minimal">
+            <loader>
+                <query><![CDATA[select e from library$Publisher e ]]></query>
+            </loader>
+        </collection>
+        <collection id="townsDc" class="com.company.library.entity.Town" view="_minimal">
+            <loader>
+                <query><![CDATA[select e from library$Town e ]]></query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode height="600" width="800"/>
+    <layout expand="editActions" spacing="true">
+        <form id="form" dataContainer="bookPublicationDc">
+            <column width="250px">
+                <lookupField id="bookField" property="book" editable="false" optionsContainer="booksDc"/>
+                <lookupField id="publisherField" property="publisher" optionsContainer="publishersDc"/>
+                <lookupField id="townField" property="town" optionsContainer="townsDc"/>
+                <textField id="yearField" property="year"/>
+            </column>
+        </form>
+        <hbox id="editActions" spacing="true">
+            <button action="windowCommitAndClose"/>
+            <button action="windowClose"/>
+        </hbox>
+    </layout>
+</window>
