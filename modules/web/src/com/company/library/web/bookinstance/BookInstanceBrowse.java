@@ -21,7 +21,7 @@ public class BookInstanceBrowse extends StandardLookup<BookInstance> {
     private GroupTable<BookInstance> bookInstancesTable;
 
     @Inject
-    private Label bookTitleLabel;
+    private Label<String> bookTitleLabel;
 
     @Inject
     private MessageBundle messageBundle;
@@ -33,7 +33,6 @@ public class BookInstanceBrowse extends StandardLookup<BookInstance> {
 
     @Inject
     private Button assignLibraryDepartmentBtn;
-
 
     @Subscribe
     protected void onBeforeShow(BeforeShowEvent event) {
