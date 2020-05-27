@@ -15,12 +15,12 @@
   ~ limitations under the License.
   -->
 <menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
-    <menu id="library" insertBefore="administration">
+    <menu id="library" insertBefore="reports">
         <item screen="library$Book.browse"/>
         <item screen="library$BookPublication.browse"/>
         <item screen="library_AccessionRegisterWindow"/>
     </menu>
-    <menu id="referenceData" insertBefore="administration">
+    <menu id="referenceData" insertBefore="reports">
         <item screen="library$LibraryDepartment.browse"/>
         <item screen="library$LiteratureType.browse"/>
         <item screen="library$Town.browse"/>
