@@ -14,4 +14,4 @@ The Library showcase contains:
 Based on CUBA Platform 7.2.
 
 ## Issues
-Please use https://www.cuba-platform.com/discuss for discussion, support, and reporting problems corresponding to this sample.
+Please use https://www.cuba-platform.com/discuss for discussion, support and reporting problems corresponding to this sample.
