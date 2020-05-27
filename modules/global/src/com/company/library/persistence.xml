@@ -27,6 +27,5 @@
         <class>com.company.library.entity.LiteratureType</class>
         <class>com.company.library.entity.Publisher</class>
         <class>com.company.library.entity.Town</class>
-        <class>com.company.library.entity.YearDatatype</class>
     </persistence-unit>
 </persistence>
