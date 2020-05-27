@@ -72,7 +72,7 @@
             </grid>
         </groupBox>
         <groupBox id="itemsGroupBox" spacing="true" caption="msg://createdBookInstances" expand="bookInstancesTable">
-            <table id="bookInstancesTable" height="100px" width="100%" multiselect="true"
+            <table id="bookInstancesTable" width="100%" multiselect="true"
                    dataContainer="bookInstancesDc">
                 <columns>
                     <column id="inventoryNumber"/>

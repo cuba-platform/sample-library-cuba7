@@ -8,11 +8,10 @@ The Library showcase contains:
 
 -	The data model, which includes 8 related entities
 -	Custom screens
--	Both web and desktop representations of the UI generated from the same layout
 -	Simple business logic implemented on a middleware tier
 -	Reporting module with [sample reports](https://doc.cuba-platform.com/reporting-latest/example_xls.html)
 
-Based on CUBA Platform 6.10.1
+Based on CUBA Platform 7.2.
 
 ## Issues
-Please use https://www.cuba-platform.com/discuss for discussion, support, and reporting problems coressponding to this sample.
+Please use https://www.cuba-platform.com/discuss for discussion, support, and reporting problems corresponding to this sample.

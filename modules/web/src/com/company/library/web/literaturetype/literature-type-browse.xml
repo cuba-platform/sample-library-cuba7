@@ -38,7 +38,7 @@
                     width="100%"
                     dataContainer="literatureTypesDc">
             <actions>
-                <action id="create" type="create" openType="NEW_WINDOW"/>
+                <action id="create" type="create"/>
                 <action id="edit" type="edit"/>
                 <action id="remove" type="remove"/>
             </actions>
