@@ -111,7 +111,7 @@ configure(coreModule) {
         delete "$cuba.appHome/${modulePrefix}-core/conf"
     }
 
-    task deploy(dependsOn: [jar, cleanConf], type: CubaDeployment) {
+    task deploy(dependsOn: [assemble, cleanConf], type: CubaDeployment) {
         appName = "${modulePrefix}-core"
         appJars(modulePrefix + '-global', modulePrefix + '-core')
     }
@@ -172,7 +172,7 @@ configure(webModule) {
         delete "$cuba.appHome/${modulePrefix}/conf"
     }
 
-    task deploy(dependsOn: [jar, cleanConf], type: CubaDeployment) {
+    task deploy(dependsOn: [assemble, cleanConf], type: CubaDeployment) {
         appName = "${modulePrefix}"
         appJars(modulePrefix + '-global', modulePrefix + '-gui', modulePrefix + '-web')
     }
